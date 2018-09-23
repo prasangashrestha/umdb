@@ -1,0 +1,28 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "Fundamentals of Data Management final project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prasangashrestha/umdb.git"
+  },
+  "keywords": [
+    "fdm",
+    "final",
+    "project"
+  ],
+  "author": "Prasanga Shrestha (101890972)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prasangashrestha/umdb/issues"
+  },
+  "homepage": "https://github.com/prasangashrestha/umdb#readme",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.3"
+  }
+}
