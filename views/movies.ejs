@@ -1,8 +1,31 @@
-<h1>Movies</h1>
-<% movies.forEach((movie)=>{ %>
-    <div>
-        <h3><%= movie.name %></h3>
-        <img src ="<%= movie.image %>">
-    </div>
+<% include partials/header %>
 
-<% }); %>
+
+<div class = "container">
+<header class="jumbotron">
+    <div class = "container">
+        <h1>Welcome to bmdb!</h1>
+        <p>Movies from all over the world</p>
+        <p><a href = "/movies/new" class = "btn btn-primary btn-large">Add Movies</a></p>
+    </div>
+   
+</header>
+
+ <div class ="row text-center" style="display:flex; flex-wrap: wrap;">
+    <% movies.forEach((movie)=>{ %>
+    <div class = "col-md-3 col-sm-6">
+        <div class= "thumbnail">
+                <img src ="<%= movie.image %>">
+                <h3><%= movie.name %></h3>
+       </div>
+    </div>
+    <% }); %>
+</div>
+
+
+
+
+<footer>FDM final project - Prasanga Shrestha</footer>
+</div>
+
+<% include partials/footer %>
