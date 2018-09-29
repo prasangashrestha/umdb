@@ -34,7 +34,7 @@ app.post("/movies", (req,res) => {
 });
 
 app.get("/movies/new", (req,res) => {
-    
+   console.log("Rendering to the new page to add movies...");
    res.render("new"); 
 });
 
