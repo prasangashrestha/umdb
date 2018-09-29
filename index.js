@@ -34,7 +34,7 @@ app.post("/movies", (req,res) => {
 });
 
 app.get("/movies/new", (req,res) => {
-    
+   console.log("This is irrelevant");
    res.render("new"); 
 });
 
