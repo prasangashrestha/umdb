@@ -62,6 +62,8 @@ app.post("/movies", (req,res) => {
 app.get("/movies/new", (req,res) => {
     
    res.render("movies/new"); 
+
+  
 });
 
 app.get("/movies/:id", (req,res)=>{
