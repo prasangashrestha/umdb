@@ -2,8 +2,11 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser")
 var mongoose = require("mongoose");
+var passport = require("passport");
+var LocalStrategy = require("passport-local");
 var Movie = require("./models/movie");
 var seedDB = require("./seeds");
+var User = require("./models/user");
 var Comment = require("./models/comment");
 
 
@@ -11,6 +14,18 @@ mongoose.connect("mongodb://localhost/umdb");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 seedDB();
+
+//PASSPORT CONFIGURATION
+app.use(require("express-session")({
+    secret: "fdm",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // Movie.create({
 //     name: "Godfather",
@@ -108,6 +123,37 @@ Movie.findById(req.params.id, (err,movie)=>{
         })
     }
 })
+})
+
+//AUTH ROUTES
+
+//show register
+app.get("/register",(req,res)=>{
+    res.render("register");
+})
+
+app.post("/register", (req,res)=>{
+    User.register(new User({username: req.body.username}), req.body.password, (err,user)=>{
+        if(err){
+            console.log(err);
+            return res.render("register")
+        }
+        passport.authenticate("local")(req,res,()=>{
+            res.redirect("/movies")
+        })
+    })
+})
+
+//show login form
+app.get("/login", (req,res)=>{
+    res.render("login");
+})
+//handling login logic
+app.post("/login", passport.authenticate("local",{
+        successRedirect: "/movies",
+        failureRedirect: "/login"
+    }),(req,res)=>{
+    
 })
 
 app.listen(process.env.PORT, process.env.IP, function(){
