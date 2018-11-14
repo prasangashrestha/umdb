@@ -4,16 +4,23 @@ var bodyParser = require("body-parser")
 var mongoose = require("mongoose");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
+var methodOverride = require("method-override");
 var Movie = require("./models/movie");
 var seedDB = require("./seeds");
 var User = require("./models/user");
 var Comment = require("./models/comment");
 
+var movieRoutes = require("./routes/movies");
+var commentRoutes = require("./routes/comments");
+var indexRoutes = require("./routes/index");
+    
 
 mongoose.connect("mongodb://localhost/umdb");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-seedDB();
+app.use(methodOverride("_method"));
+
+// seedDB();
 
 //PASSPORT CONFIGURATION
 app.use(require("express-session")({
@@ -27,6 +34,10 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+app.use((req,res,next)=>{
+    res.locals.currentUser = req.user;
+    next();
+})
 // Movie.create({
 //     name: "Godfather",
 //     image: "https://i.pinimg.com/originals/99/9b/cd/999bcd2f2af91cdd48e1293a2a7f8f86.jpg",
@@ -40,121 +51,16 @@ passport.deserializeUser(User.deserializeUser());
 //     }
     
 // });
+app.use("/movies", movieRoutes);
+app.use(indexRoutes);
+app.use(commentRoutes);
+
 
 app.get("/", (req, res)=> {
-    res.render("home");
+    res.render("/movies");
 });
 
 
-app.get("/movies", (req,res) => {
-    Movie.find({}, (err,allMovies)=>{
-        if(err){
-            console.log(err);
-        }else{
-            res.render("movies", {movies:allMovies});
-        }
-    })
-        
-});
-
-app.post("/movies", (req,res) => {
-    var name = req.body.name;
-    var image = req.body.image;
-    var description = req.body.description;
-    var newMovie = {name: name, image:image, description:description}
-    
-    Movie.create(newMovie, (err,createdNow)=>{
-        if(err){
-            console.log(err);
-        }else{
-             res.redirect("/movies");
-        }
-    });
-    
-   
-});
-
-app.get("/movies/new", (req,res) => {
-    
-   res.render("movies/new"); 
-
-  
-});
-
-app.get("/movies/:id", (req,res)=>{
-    Movie.findById(req.params.id).populate("comments").exec((err, foundMovie)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log(foundMovie);
-            res.render("movies/userShow", {movie: foundMovie} )
-        }
-    });
-});
-
-app.get("/movies/:id/comments/new", (req,res)=>{
-    Movie.findById(req.params.id, (err,movie)=>{
-        if(err){
-            console.log(err);
-        }else{
-            res.render("comments/new", {movie:movie});
-        }
-        
-    })
-   
-});
-
-app.post("/movies/:id/comments", (req,res)=>{
-    
-Movie.findById(req.params.id, (err,movie)=>{
-    
-    if(err){
-        console.log(err);
-        res.redirect("/movies");
-    }else{
-        Comment.create(req.body.comment,(err,comment)=>{
-            if(err){
-                console.log(err);
-            }else{
-                movie.comments.push(comment);
-                movie.save();
-                res.redirect('/movies/' + movie._id);
-            }
-        })
-    }
-})
-})
-
-//AUTH ROUTES
-
-//show register
-app.get("/register",(req,res)=>{
-    res.render("register");
-})
-
-app.post("/register", (req,res)=>{
-    User.register(new User({username: req.body.username}), req.body.password, (err,user)=>{
-        if(err){
-            console.log(err);
-            return res.render("register")
-        }
-        passport.authenticate("local")(req,res,()=>{
-            res.redirect("/movies")
-        })
-    })
-})
-
-//show login form
-app.get("/login", (req,res)=>{
-    res.render("login");
-})
-//handling login logic
-app.post("/login", passport.authenticate("local",{
-        successRedirect: "/movies",
-        failureRedirect: "/login"
-    }),(req,res)=>{
-    
-})
 
 app.listen(process.env.PORT, process.env.IP, function(){
     console.log("The umdb server has started!");
