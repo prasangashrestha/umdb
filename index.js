@@ -51,7 +51,7 @@ app.use((req,res,next)=>{
 //     }
     
 // });
-app.use("/movies", movieRoutes);
+app.use(movieRoutes);
 app.use(indexRoutes);
 app.use(commentRoutes);
 

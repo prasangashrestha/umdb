@@ -4,7 +4,7 @@ var Movie = require("../models/movie");
 
  
  
-router.get("/", (req,res) => {
+router.get("/movies", (req,res) => {
     Movie.find({}, (err,allMovies)=>{
         if(err){
             console.log(err);
@@ -15,7 +15,7 @@ router.get("/", (req,res) => {
         
 });
 
-router.post("/", isLoggedIn, (req,res) => {
+router.post("/movies", isLoggedIn, (req,res) => {
 
     var name = req.body.name;
     var image = req.body.image;
@@ -34,18 +34,16 @@ router.post("/", isLoggedIn, (req,res) => {
              res.redirect("movies");
         }
     });
-    
-   
 });
 
-router.get("/new", isLoggedIn, (req,res) => {
+router.get("/movies/new", isLoggedIn, (req,res) => {
     
    res.render("movies/new"); 
 
   
 });
 
-router.get("/:id", (req,res)=>{
+router.get("/movies/:id", (req,res)=>{
     Movie.findById(req.params.id).populate("comments").exec((err, foundMovie)=>{
         if(err){
             console.log(err);
@@ -56,7 +54,7 @@ router.get("/:id", (req,res)=>{
     });
 });
 
-router.get("/:id/edit", checkMovieOwnership, (req,res)=>{
+router.get("/movies/:id/edit", checkMovieOwnership, (req,res)=>{
      Movie.findById(req.params.id, (err,foundMovie)=>{
          res.render("movies/edit", {movie:foundMovie})
          
@@ -64,7 +62,7 @@ router.get("/:id/edit", checkMovieOwnership, (req,res)=>{
     
 });
 
-router.put("/:id", checkMovieOwnership, (req,res)=>{
+router.put("/movies/:id", checkMovieOwnership, (req,res)=>{
     
     Movie.findByIdAndUpdate(req.params.id, req.body.movie, (err, updatedCampground)=>{
         if (err){
@@ -75,7 +73,7 @@ router.put("/:id", checkMovieOwnership, (req,res)=>{
     })
 })
 
-router.delete("/:id",checkMovieOwnership, (req,res)=>{
+router.delete("/movies/:id",checkMovieOwnership, (req,res)=>{
     Movie.findByIdAndRemove(req.params.id, (err) =>{
         if(err){
             res.redirect("/movies");
